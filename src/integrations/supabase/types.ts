@@ -14,16 +14,157 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      applications: {
+        Row: {
+          aadhaar_url: string | null
+          admin_notes: string | null
+          adults_count: number | null
+          bank_statement_url: string | null
+          children_count: number | null
+          country: string | null
+          created_at: string
+          date_of_birth: string | null
+          departure_date: string | null
+          email: string
+          father_name: string | null
+          full_address: string | null
+          full_name: string
+          gender: string | null
+          id: string
+          is_vip: boolean
+          mobile_number: string
+          nationality: string | null
+          notes: string | null
+          num_travelers: number | null
+          passport_back_url: string | null
+          passport_expiry_date: string | null
+          passport_front_url: string | null
+          passport_issue_date: string | null
+          passport_number: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          photo_url: string | null
+          return_date: string | null
+          services: string[] | null
+          status: Database["public"]["Enums"]["application_status"]
+          travel_purpose: string | null
+          updated_at: string
+          whatsapp_number: string | null
+        }
+        Insert: {
+          aadhaar_url?: string | null
+          admin_notes?: string | null
+          adults_count?: number | null
+          bank_statement_url?: string | null
+          children_count?: number | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          departure_date?: string | null
+          email: string
+          father_name?: string | null
+          full_address?: string | null
+          full_name: string
+          gender?: string | null
+          id?: string
+          is_vip?: boolean
+          mobile_number: string
+          nationality?: string | null
+          notes?: string | null
+          num_travelers?: number | null
+          passport_back_url?: string | null
+          passport_expiry_date?: string | null
+          passport_front_url?: string | null
+          passport_issue_date?: string | null
+          passport_number?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          photo_url?: string | null
+          return_date?: string | null
+          services?: string[] | null
+          status?: Database["public"]["Enums"]["application_status"]
+          travel_purpose?: string | null
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Update: {
+          aadhaar_url?: string | null
+          admin_notes?: string | null
+          adults_count?: number | null
+          bank_statement_url?: string | null
+          children_count?: number | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          departure_date?: string | null
+          email?: string
+          father_name?: string | null
+          full_address?: string | null
+          full_name?: string
+          gender?: string | null
+          id?: string
+          is_vip?: boolean
+          mobile_number?: string
+          nationality?: string | null
+          notes?: string | null
+          num_travelers?: number | null
+          passport_back_url?: string | null
+          passport_expiry_date?: string | null
+          passport_front_url?: string | null
+          passport_issue_date?: string | null
+          passport_number?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          photo_url?: string | null
+          return_date?: string | null
+          services?: string[] | null
+          status?: Database["public"]["Enums"]["application_status"]
+          travel_purpose?: string | null
+          updated_at?: string
+          whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      application_status:
+        | "pending"
+        | "processing"
+        | "approved"
+        | "rejected"
+        | "completed"
+      payment_status: "unpaid" | "partial" | "paid" | "refunded"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +291,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      application_status: [
+        "pending",
+        "processing",
+        "approved",
+        "rejected",
+        "completed",
+      ],
+      payment_status: ["unpaid", "partial", "paid", "refunded"],
+    },
   },
 } as const
