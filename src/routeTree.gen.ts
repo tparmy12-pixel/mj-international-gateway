@@ -14,6 +14,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -40,12 +41,18 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/admin/dashboard',
+  path: '/admin/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
   '/contact': typeof ContactRoute
   '/services': typeof ServicesRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/apply': typeof ApplyRoute
   '/contact': typeof ContactRoute
   '/services': typeof ServicesRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,34 @@ export interface FileRoutesById {
   '/apply': typeof ApplyRoute
   '/contact': typeof ContactRoute
   '/services': typeof ServicesRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/apply' | '/contact' | '/services' | '/admin/login'
+  fullPaths:
+    | '/'
+    | '/apply'
+    | '/contact'
+    | '/services'
+    | '/admin/dashboard'
+    | '/admin/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/apply' | '/contact' | '/services' | '/admin/login'
-  id: '__root__' | '/' | '/apply' | '/contact' | '/services' | '/admin/login'
+  to:
+    | '/'
+    | '/apply'
+    | '/contact'
+    | '/services'
+    | '/admin/dashboard'
+    | '/admin/login'
+  id:
+    | '__root__'
+    | '/'
+    | '/apply'
+    | '/contact'
+    | '/services'
+    | '/admin/dashboard'
+    | '/admin/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +104,7 @@ export interface RootRouteChildren {
   ApplyRoute: typeof ApplyRoute
   ContactRoute: typeof ContactRoute
   ServicesRoute: typeof ServicesRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
 }
 
@@ -116,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -124,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApplyRoute: ApplyRoute,
   ContactRoute: ContactRoute,
   ServicesRoute: ServicesRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
 }
 export const routeTree = rootRouteImport
