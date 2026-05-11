@@ -60,7 +60,7 @@ function AdminDashboard() {
   async function logout() { await supabase.auth.signOut(); navigate({ to: "/admin/login" }); }
 
   async function update(id: string, patch: Partial<App>) {
-    const { error } = await supabase.from("applications").update(patch).eq("id", id);
+    const { error } = await supabase.from("applications").update(patch as never).eq("id", id);
     if (error) { toast.error(error.message); return; }
     toast.success("Updated");
     setApps((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
