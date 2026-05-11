@@ -42,6 +42,9 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
+          <Link to={signedIn ? "/track" : "/auth"} className="flex items-center gap-2 text-sm uppercase tracking-widest text-foreground/80 hover:text-gold">
+            <User className="w-4 h-4" /> {signedIn ? "Account" : "Sign in"}
+          </Link>
           <Link to="/apply" className="px-6 py-2.5 rounded-full btn-gold text-sm font-semibold uppercase tracking-wider">
             Book Journey
           </Link>
@@ -58,6 +61,10 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
+          <Link to={signedIn ? "/track" : "/auth"} onClick={() => setOpen(false)}
+            className="block text-base uppercase tracking-widest text-foreground/90 hover:text-gold">
+            {signedIn ? "My Account" : "Sign in"}
+          </Link>
           <Link to="/apply" onClick={() => setOpen(false)}
             className="block text-center px-6 py-3 rounded-full btn-gold font-semibold uppercase tracking-wider">
             Book Journey
