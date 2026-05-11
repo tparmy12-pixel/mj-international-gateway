@@ -36,6 +36,12 @@ export type Database = {
           nationality: string | null
           notes: string | null
           num_travelers: number | null
+          order_address: string | null
+          order_city: string | null
+          order_created_at: string | null
+          order_pincode: string | null
+          order_state: string | null
+          order_status: Database["public"]["Enums"]["order_status"]
           passport_back_url: string | null
           passport_expiry_date: string | null
           passport_front_url: string | null
@@ -48,6 +54,7 @@ export type Database = {
           status: Database["public"]["Enums"]["application_status"]
           travel_purpose: string | null
           updated_at: string
+          user_id: string | null
           whatsapp_number: string | null
         }
         Insert: {
@@ -71,6 +78,12 @@ export type Database = {
           nationality?: string | null
           notes?: string | null
           num_travelers?: number | null
+          order_address?: string | null
+          order_city?: string | null
+          order_created_at?: string | null
+          order_pincode?: string | null
+          order_state?: string | null
+          order_status?: Database["public"]["Enums"]["order_status"]
           passport_back_url?: string | null
           passport_expiry_date?: string | null
           passport_front_url?: string | null
@@ -83,6 +96,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["application_status"]
           travel_purpose?: string | null
           updated_at?: string
+          user_id?: string | null
           whatsapp_number?: string | null
         }
         Update: {
@@ -106,6 +120,12 @@ export type Database = {
           nationality?: string | null
           notes?: string | null
           num_travelers?: number | null
+          order_address?: string | null
+          order_city?: string | null
+          order_created_at?: string | null
+          order_pincode?: string | null
+          order_state?: string | null
+          order_status?: Database["public"]["Enums"]["order_status"]
           passport_back_url?: string | null
           passport_expiry_date?: string | null
           passport_front_url?: string | null
@@ -118,7 +138,68 @@ export type Database = {
           status?: Database["public"]["Enums"]["application_status"]
           travel_purpose?: string | null
           updated_at?: string
+          user_id?: string | null
           whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          payment_status: string
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          payment_status?: string
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          payment_status?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -164,7 +245,9 @@ export type Database = {
         | "approved"
         | "rejected"
         | "completed"
+      order_status: "none" | "created" | "billed"
       payment_status: "unpaid" | "partial" | "paid" | "refunded"
+      subscription_plan: "unique" | "infinity" | "global"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -300,7 +383,9 @@ export const Constants = {
         "rejected",
         "completed",
       ],
+      order_status: ["none", "created", "billed"],
       payment_status: ["unpaid", "partial", "paid", "refunded"],
+      subscription_plan: ["unique", "infinity", "global"],
     },
   },
 } as const

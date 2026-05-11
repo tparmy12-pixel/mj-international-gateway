@@ -1,10 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { FloatingContacts } from "@/components/FloatingContacts";
 import { SERVICES, COUNTRIES } from "@/lib/services-data";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Upload, CheckCircle2, Loader2 } from "lucide-react";
 
@@ -26,6 +26,15 @@ function ApplyPage() {
   const [done, setDone] = useState(false);
   const [services, setServices] = useState<string[]>([]);
   const [files, setFiles] = useState<Partial<Record<FileField, File>>>({});
+  const [userId, setUserId] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUserId(data.session?.user.id ?? null);
+      setAuthChecked(true);
+    });
+  }, []);
 
   const toggleService = (k: string) =>
     setServices((s) => (s.includes(k) ? s.filter((x) => x !== k) : [...s, k]));
@@ -61,6 +70,7 @@ function ApplyPage() {
       ]);
 
       const { error } = await supabase.from("applications").insert({
+        user_id: userId,
         full_name: get("full_name")!,
         father_name: get("father_name"),
         date_of_birth: get("date_of_birth"),
@@ -87,7 +97,7 @@ function ApplyPage() {
       });
       if (error) throw error;
       setDone(true);
-      toast.success("Application submitted! Our team will contact you within 24 hours.");
+      toast.success("Application submitted! Status: pending.");
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Submission failed. Please try again.");
@@ -105,12 +115,38 @@ function ApplyPage() {
             <CheckCircle2 className="w-20 h-20 text-gold mx-auto mb-6" />
             <h1 className="font-display text-4xl md:text-5xl font-bold">Application <span className="gold-text">Received</span></h1>
             <p className="mt-4 text-muted-foreground text-lg">
-              Thank you for choosing MJ International Tours. Our travel concierge will reach out within 24 hours via your provided contact details.
+              Status: <span className="text-amber-300 font-semibold">Pending</span>. Check your data is pending — we'll notify you once accepted.
             </p>
-            <button onClick={() => navigate({ to: "/" })}
-              className="mt-8 px-8 py-3 rounded-full btn-gold font-semibold uppercase tracking-widest text-sm">
-              Back Home
-            </button>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+              <button onClick={() => navigate({ to: userId ? "/track" : "/auth" })}
+                className="px-8 py-3 rounded-full btn-gold font-semibold uppercase tracking-widest text-sm">
+                {userId ? "Track Status" : "Sign in to Track"}
+              </button>
+              <button onClick={() => navigate({ to: "/" })}
+                className="px-8 py-3 rounded-full border border-gold/40 text-gold font-semibold uppercase tracking-widest text-sm">
+                Back Home
+              </button>
+            </div>
+          </div>
+        </section>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (authChecked && !userId) {
+    return (
+      <div className="min-h-screen">
+        <Navbar /><FloatingContacts />
+        <section className="pt-40 pb-20 px-6">
+          <div className="max-w-xl mx-auto luxury-card p-10 text-center">
+            <h1 className="font-display text-3xl mb-3">Sign in to Apply</h1>
+            <p className="text-muted-foreground text-sm mb-6">
+              You need an account so you can track your application status, get approval updates and manage orders.
+            </p>
+            <Link to="/auth" className="inline-block px-8 py-3 rounded-full btn-gold font-semibold uppercase tracking-widest text-sm">
+              Sign in / Create account
+            </Link>
           </div>
         </section>
         <Footer />

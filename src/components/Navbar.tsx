@@ -1,13 +1,22 @@
 import { Link } from "@tanstack/react-router";
-import { Plane, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Plane, Menu, X, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSignedIn(!!s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
   const links = [
     { to: "/", label: "Home" },
     { to: "/services", label: "Services" },
-    { to: "/apply", label: "Apply Now" },
+    { to: "/pricing", label: "Pricing" },
+    { to: "/apply", label: "Apply" },
+    { to: "/track", label: "Track" },
     { to: "/contact", label: "Contact" },
   ];
   return (
@@ -33,6 +42,9 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
+          <Link to={signedIn ? "/track" : "/auth"} className="flex items-center gap-2 text-sm uppercase tracking-widest text-foreground/80 hover:text-gold">
+            <User className="w-4 h-4" /> {signedIn ? "Account" : "Sign in"}
+          </Link>
           <Link to="/apply" className="px-6 py-2.5 rounded-full btn-gold text-sm font-semibold uppercase tracking-wider">
             Book Journey
           </Link>
@@ -49,6 +61,10 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
+          <Link to={signedIn ? "/track" : "/auth"} onClick={() => setOpen(false)}
+            className="block text-base uppercase tracking-widest text-foreground/90 hover:text-gold">
+            {signedIn ? "My Account" : "Sign in"}
+          </Link>
           <Link to="/apply" onClick={() => setOpen(false)}
             className="block text-center px-6 py-3 rounded-full btn-gold font-semibold uppercase tracking-wider">
             Book Journey

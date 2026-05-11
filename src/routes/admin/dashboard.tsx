@@ -51,6 +51,24 @@ function AdminDashboard() {
     })();
   }, []);
 
+  useEffect(() => {
+    if (!authorized) return;
+    const channel = supabase.channel("admin-apps")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "applications" }, (payload) => {
+        const a: any = payload.new;
+        toast.success(`New application from ${a.full_name}`, {
+          duration: 8000,
+          style: { border: "1px solid rgba(212,175,55,0.6)", boxShadow: "0 0 30px rgba(212,175,55,0.4)" },
+        });
+        setApps((prev) => [a, ...prev]);
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "applications" }, (payload) => {
+        setApps((prev) => prev.map((x) => (x.id === (payload.new as any).id ? payload.new : x)));
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [authorized]);
+
   async function loadApps() {
     const { data, error } = await supabase.from("applications").select("*").order("created_at", { ascending: false });
     if (error) { toast.error(error.message); return; }
@@ -60,7 +78,7 @@ function AdminDashboard() {
   async function logout() { await supabase.auth.signOut(); navigate({ to: "/admin/login" }); }
 
   async function update(id: string, patch: Partial<App>) {
-    const { error } = await supabase.from("applications").update(patch).eq("id", id);
+    const { error } = await supabase.from("applications").update(patch as never).eq("id", id);
     if (error) { toast.error(error.message); return; }
     toast.success("Updated");
     setApps((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
