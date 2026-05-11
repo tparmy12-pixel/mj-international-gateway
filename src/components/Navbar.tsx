@@ -1,13 +1,22 @@
 import { Link } from "@tanstack/react-router";
-import { Plane, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Plane, Menu, X, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSignedIn(!!s));
+    return () => sub.subscription.unsubscribe();
+  }, []);
   const links = [
     { to: "/", label: "Home" },
     { to: "/services", label: "Services" },
-    { to: "/apply", label: "Apply Now" },
+    { to: "/pricing", label: "Pricing" },
+    { to: "/apply", label: "Apply" },
+    { to: "/track", label: "Track" },
     { to: "/contact", label: "Contact" },
   ];
   return (
