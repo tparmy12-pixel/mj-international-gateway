@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { FloatingContacts } from "@/components/FloatingContacts";
 import { SERVICES } from "@/lib/services-data";
-import { Star, Quote, ArrowRight, Plane, Award, Globe2, Users, ShieldCheck } from "lucide-react";
+import { Star, Quote, ArrowRight, Plane, Award, Globe2, Users, ShieldCheck, Crown } from "lucide-react";
 import hero from "@/assets/hero.jpg";
 import g1 from "@/assets/gallery-1.jpg";
 import g2 from "@/assets/gallery-2.jpg";
@@ -27,7 +26,14 @@ function Home() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <FloatingContacts />
+
+      {/* Subscription strip */}
+      <div className="fixed top-20 inset-x-0 z-40 flex justify-center pointer-events-none px-4">
+        <Link to="/pricing"
+          className="pointer-events-auto inline-flex items-center gap-2 px-5 py-2 rounded-full btn-gold text-xs font-semibold uppercase tracking-widest shadow-lg animate-fade-in">
+          <Crown className="w-4 h-4" /> Get Pro Subscription
+        </Link>
+      </div>
 
       {/* HERO */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -51,10 +57,10 @@ function Home() {
             <Link to="/apply" className="px-8 py-4 rounded-full btn-gold font-semibold uppercase tracking-widest text-sm flex items-center justify-center gap-2 group">
               Start Your Journey <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"
-              className="px-8 py-4 rounded-full glass gold-border font-semibold uppercase tracking-widest text-sm text-gold hover:bg-gold/10 transition-colors">
-              Chat on WhatsApp
-            </a>
+            <Link to="/pricing"
+              className="px-8 py-4 rounded-full glass gold-border font-semibold uppercase tracking-widest text-sm text-gold hover:bg-gold/10 transition-colors flex items-center justify-center gap-2">
+              <Crown className="w-4 h-4" /> View Pro Plans
+            </Link>
           </div>
 
           {/* Stats */}

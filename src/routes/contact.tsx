@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { FloatingContacts } from "@/components/FloatingContacts";
-import { Phone, Mail, MapPin, MessageCircle, Clock } from "lucide-react";
+import { Mail, MapPin, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
   component: ContactPage,
@@ -18,7 +17,6 @@ function ContactPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <FloatingContacts />
       <section className="pt-40 pb-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
@@ -27,8 +25,6 @@ function ContactPage() {
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {[
-              { icon: Phone, title: "Call Us", value: "+91 98765 43210", href: "tel:+919876543210" },
-              { icon: MessageCircle, title: "WhatsApp", value: "+91 98765 43210", href: "https://wa.me/919876543210" },
               { icon: Mail, title: "Email", value: "info@mjinternational.com", href: "mailto:info@mjinternational.com" },
               { icon: MapPin, title: "Office", value: "Mumbai, Maharashtra, India" },
               { icon: Clock, title: "Hours", value: "Mon–Sat · 10:00 AM – 8:00 PM" },
