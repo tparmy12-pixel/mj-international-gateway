@@ -1,7 +1,22 @@
 import { Link } from "@tanstack/react-router";
-import { Plane, Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Plane, Phone, Mail, MapPin } from "lucide-react";
 
 export function Footer() {
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    let active = true;
+    const check = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { if (active) setIsAdmin(false); return; }
+      const { data } = await supabase.from("user_roles").select("role").eq("user_id", session.user.id);
+      if (active) setIsAdmin(!!data?.some((r: any) => r.role === "admin"));
+    };
+    check();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => check());
+    return () => { active = false; sub.subscription.unsubscribe(); };
+  }, []);
   return (
     <footer className="border-t border-gold/15 mt-20" style={{ background: "linear-gradient(180deg, transparent, oklch(0.10 0.04 265))" }}>
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-16 grid md:grid-cols-4 gap-10">
@@ -27,14 +42,13 @@ export function Footer() {
             <li><Link to="/services" className="hover:text-gold">Services</Link></li>
             <li><Link to="/apply" className="hover:text-gold">Apply</Link></li>
             <li><Link to="/contact" className="hover:text-gold">Contact</Link></li>
-            <li><Link to="/admin/login" className="hover:text-gold">Admin</Link></li>
+            {isAdmin && <li><Link to="/admin/dashboard" className="hover:text-gold">Admin</Link></li>}
           </ul>
         </div>
         <div>
           <h4 className="text-gold uppercase text-xs tracking-[0.3em] mb-4">Reach Us</h4>
           <ul className="space-y-3 text-foreground/80 text-sm">
             <li className="flex items-start gap-2"><Phone className="w-4 h-4 text-gold mt-0.5"/> +91 98765 43210</li>
-            <li className="flex items-start gap-2"><MessageCircle className="w-4 h-4 text-gold mt-0.5"/> WhatsApp 24/7</li>
             <li className="flex items-start gap-2"><Mail className="w-4 h-4 text-gold mt-0.5"/> info@mjinternational.com</li>
             <li className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gold mt-0.5"/> Mumbai, India</li>
           </ul>
