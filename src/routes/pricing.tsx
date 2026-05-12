@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { FloatingContacts } from "@/components/FloatingContacts";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Crown, Sparkles, Globe2, Check, Loader2 } from "lucide-react";
+import { Crown, Sparkles, Globe2, Check, Loader2, Copy, X } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/pricing")({
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/pricing")({
   }),
 });
 
-const PAY_UPI = "8279713106@paytm";
+const PAY_NUMBER = "8279971306";
 const PAY_NAME = "MJ International Tours";
 
 const PLANS = [
@@ -40,30 +40,42 @@ const PLANS = [
 
 function Pricing() {
   const navigate = useNavigate();
-  const [busy, setBusy] = useState<string | null>(null);
+  const [activePlan, setActivePlan] = useState<typeof PLANS[number] | null>(null);
+  const [txnId, setTxnId] = useState("");
+  const [payerName, setPayerName] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  async function buy(plan: typeof PLANS[number]) {
-    setBusy(plan.key);
+  async function startBuy(plan: typeof PLANS[number]) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { toast.info("Please sign in to continue"); navigate({ to: "/auth" }); return; }
+    setActivePlan(plan); setTxnId(""); setPayerName("");
+  }
+
+  async function copyNumber() {
+    try { await navigator.clipboard.writeText(PAY_NUMBER); toast.success("Number copied"); }
+    catch { toast.error("Copy failed"); }
+  }
+
+  async function submitPayment() {
+    if (!activePlan) return;
+    if (!txnId.trim() || !payerName.trim()) { toast.error("Enter Transaction ID and Name"); return; }
+    setSubmitting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast.info("Please sign in to continue");
-        navigate({ to: "/auth" });
-        return;
-      }
+      if (!session) throw new Error("Sign in required");
       const { error } = await supabase.from("subscriptions").insert({
         user_id: session.user.id,
-        plan: plan.key,
-        amount: plan.amount,
+        plan: activePlan.key,
+        amount: activePlan.amount,
         payment_status: "pending",
-      });
+        transaction_id: txnId.trim(),
+        payer_name: payerName.trim(),
+      } as never);
       if (error) throw error;
-      const upi = `upi://pay?pa=${PAY_UPI}&pn=${encodeURIComponent(PAY_NAME)}&am=${plan.amount}&cu=INR&tn=${encodeURIComponent(plan.name + " Subscription")}`;
-      toast.success("Opening Paytm / UPI app… Complete payment to activate.");
-      window.location.href = upi;
-    } catch (err: any) {
-      toast.error(err.message || "Could not start payment");
-    } finally { setBusy(null); }
+      toast.success("Payment submitted! Verification within 24 hours.");
+      setActivePlan(null);
+    } catch (e: any) { toast.error(e.message || "Submission failed"); }
+    finally { setSubmitting(false); }
   }
 
   return (
@@ -75,7 +87,7 @@ function Pricing() {
             <p className="text-xs uppercase tracking-[0.4em] text-gold mb-4">Subscription Plans</p>
             <h1 className="font-display text-4xl md:text-6xl font-bold">Choose Your <span className="gold-text">Journey</span></h1>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-              Premium travel subscriptions. Pay securely via Paytm UPI to <span className="text-gold font-semibold">{PAY_UPI}</span>.
+              Premium travel subscriptions. Pay manually via Paytm / UPI / GPay / PhonePe to <span className="text-gold font-semibold">{PAY_NUMBER}</span>.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
@@ -101,19 +113,58 @@ function Pricing() {
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => buy(p)} disabled={busy === p.key}
+                <button onClick={() => startBuy(p)}
                   className={`w-full px-6 py-3 rounded-full font-semibold uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-all
                     ${p.featured ? "btn-gold" : "border-2 border-gold/40 text-gold hover:bg-gold/10"}`}>
-                  {busy === p.key ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Subscribe via Paytm</>}
+                  Buy Now
                 </button>
               </div>
             ))}
           </div>
           <p className="text-center text-xs text-muted-foreground mt-10">
-            After payment, your subscription is verified manually within 24 hours. Save the UPI transaction ID for reference.
+            After payment, your subscription is verified manually within 24 hours. Save your UPI transaction ID for reference.
           </p>
         </div>
       </section>
+
+      {activePlan && (
+        <div className="fixed inset-0 z-50 bg-navy-deep/85 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => !submitting && setActivePlan(null)}>
+          <div className="luxury-card w-full max-w-md p-0 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-gold/15 flex items-center justify-between glass">
+              <h3 className="font-display text-lg gold-text font-bold">Pay ₹{activePlan.amount.toLocaleString("en-IN")}</h3>
+              <button onClick={() => !submitting && setActivePlan(null)} className="p-1.5 rounded-md hover:bg-gold/10"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="p-6 space-y-5">
+              <div>
+                <label className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Pay to this Paytm / UPI number</label>
+                <div className="mt-2 flex items-center gap-2 p-3 rounded-lg bg-input/50 border border-gold/30">
+                  <span className="font-display text-2xl gold-text font-bold tracking-wide flex-1">{PAY_NUMBER}</span>
+                  <button onClick={copyNumber} className="p-2 rounded-md btn-gold" title="Copy number">
+                    <Copy className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-2">Open Paytm / GPay / PhonePe → Send ₹{activePlan.amount.toLocaleString("en-IN")} to <span className="text-gold">{PAY_NAME}</span> on this number.</p>
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Transaction ID / UTR</label>
+                <input value={txnId} onChange={(e) => setTxnId(e.target.value)} placeholder="e.g. 4123567890XYZ"
+                  className="w-full mt-2 px-3 py-2.5 rounded-lg bg-input/50 border border-border focus:border-gold focus:outline-none text-sm" />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Name on Payment</label>
+                <input value={payerName} onChange={(e) => setPayerName(e.target.value)} placeholder="Your full name as per payment app"
+                  className="w-full mt-2 px-3 py-2.5 rounded-lg bg-input/50 border border-border focus:border-gold focus:outline-none text-sm" />
+              </div>
+              <button onClick={submitPayment} disabled={submitting}
+                className="w-full px-6 py-3 rounded-full btn-gold font-semibold uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit Payment"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
