@@ -178,8 +178,10 @@ export type Database = {
           amount: number
           created_at: string
           id: string
+          payer_name: string | null
           payment_status: string
           plan: Database["public"]["Enums"]["subscription_plan"]
+          transaction_id: string | null
           updated_at: string
           user_id: string
         }
@@ -187,8 +189,10 @@ export type Database = {
           amount: number
           created_at?: string
           id?: string
+          payer_name?: string | null
           payment_status?: string
           plan: Database["public"]["Enums"]["subscription_plan"]
+          transaction_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -196,8 +200,10 @@ export type Database = {
           amount?: number
           created_at?: string
           id?: string
+          payer_name?: string | null
           payment_status?: string
           plan?: Database["public"]["Enums"]["subscription_plan"]
+          transaction_id?: string | null
           updated_at?: string
           user_id?: string
         }
