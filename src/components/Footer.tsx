@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Plane, Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import { Plane, Phone, Mail, MapPin } from "lucide-react";
 
 export function Footer() {
   return (
@@ -34,7 +34,6 @@ export function Footer() {
           <h4 className="text-gold uppercase text-xs tracking-[0.3em] mb-4">Reach Us</h4>
           <ul className="space-y-3 text-foreground/80 text-sm">
             <li className="flex items-start gap-2"><Phone className="w-4 h-4 text-gold mt-0.5"/> +91 98765 43210</li>
-            <li className="flex items-start gap-2"><MessageCircle className="w-4 h-4 text-gold mt-0.5"/> WhatsApp 24/7</li>
             <li className="flex items-start gap-2"><Mail className="w-4 h-4 text-gold mt-0.5"/> info@mjinternational.com</li>
             <li className="flex items-start gap-2"><MapPin className="w-4 h-4 text-gold mt-0.5"/> Mumbai, India</li>
           </ul>
