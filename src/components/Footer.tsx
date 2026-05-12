@@ -1,7 +1,22 @@
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Plane, Phone, Mail, MapPin } from "lucide-react";
 
 export function Footer() {
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    let active = true;
+    const check = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { if (active) setIsAdmin(false); return; }
+      const { data } = await supabase.from("user_roles").select("role").eq("user_id", session.user.id);
+      if (active) setIsAdmin(!!data?.some((r: any) => r.role === "admin"));
+    };
+    check();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => check());
+    return () => { active = false; sub.subscription.unsubscribe(); };
+  }, []);
   return (
     <footer className="border-t border-gold/15 mt-20" style={{ background: "linear-gradient(180deg, transparent, oklch(0.10 0.04 265))" }}>
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-16 grid md:grid-cols-4 gap-10">
@@ -27,7 +42,7 @@ export function Footer() {
             <li><Link to="/services" className="hover:text-gold">Services</Link></li>
             <li><Link to="/apply" className="hover:text-gold">Apply</Link></li>
             <li><Link to="/contact" className="hover:text-gold">Contact</Link></li>
-            <li><Link to="/admin/login" className="hover:text-gold">Admin</Link></li>
+            {isAdmin && <li><Link to="/admin/dashboard" className="hover:text-gold">Admin</Link></li>}
           </ul>
         </div>
         <div>

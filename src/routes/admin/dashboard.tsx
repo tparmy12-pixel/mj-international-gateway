@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
-  LogOut, Search, Filter, Download, Crown, MessageCircle, Loader2,
+  LogOut, Search, Filter, Download, Crown, Phone, Loader2,
   CheckCircle2, XCircle, Clock, RotateCw, Sparkles, Plane, Eye, X,
 } from "lucide-react";
 
@@ -261,11 +261,9 @@ function AdminDashboard() {
                   </select>
                 </div>
                 <div className="flex items-end">
-                  <a href={`https://wa.me/${(selected.whatsapp_number || selected.mobile_number || "").replace(/\D/g, "")}`}
-                    target="_blank" rel="noreferrer"
-                    className="w-full px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-semibold text-white"
-                    style={{ background: "#25D366" }}>
-                    <MessageCircle className="w-4 h-4" /> WhatsApp
+                  <a href={`tel:${selected.mobile_number || ""}`}
+                    className="w-full px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-semibold btn-gold">
+                    <Phone className="w-4 h-4" /> Call
                   </a>
                 </div>
               </div>
