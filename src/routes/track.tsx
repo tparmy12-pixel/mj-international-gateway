@@ -75,7 +75,14 @@ function TrackPage() {
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
             <div>
               <p className="text-xs uppercase tracking-[0.4em] text-gold mb-2">Customer Portal</p>
-              <h1 className="font-display text-3xl md:text-5xl font-bold">My <span className="gold-text">Applications</span></h1>
+              <h1 className="font-display text-3xl md:text-5xl font-bold flex items-center gap-3 flex-wrap">
+                My <span className="gold-text">Applications</span>
+                {subs.some((s) => s.payment_status === "paid") && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs uppercase tracking-widest bg-gold/15 text-gold border border-gold/40 shadow-[0_0_20px_rgba(212,175,55,0.35)]">
+                    <Crown className="w-3.5 h-3.5" /> VIP Member
+                  </span>
+                )}
+              </h1>
               <p className="text-sm text-muted-foreground mt-2">{userEmail}</p>
             </div>
             <div className="flex gap-2">

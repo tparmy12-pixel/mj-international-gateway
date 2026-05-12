@@ -28,6 +28,7 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
   const [apps, setApps] = useState<App[]>([]);
+  const [vipUserIds, setVipUserIds] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -47,6 +48,7 @@ function AdminDashboard() {
       }
       setAuthorized(true);
       await loadApps();
+      await loadSubs();
       setLoading(false);
     })();
   }, []);
@@ -73,6 +75,11 @@ function AdminDashboard() {
     const { data, error } = await supabase.from("applications").select("*").order("created_at", { ascending: false });
     if (error) { toast.error(error.message); return; }
     setApps(data || []);
+  }
+
+  async function loadSubs() {
+    const { data } = await supabase.from("subscriptions").select("user_id,payment_status").eq("payment_status", "paid");
+    setVipUserIds(new Set((data || []).map((s: any) => s.user_id).filter(Boolean)));
   }
 
   async function logout() { await supabase.auth.signOut(); navigate({ to: "/admin/login" }); }
@@ -202,8 +209,11 @@ function AdminDashboard() {
                   <tr key={a.id} className="border-b border-gold/5 hover:bg-gold/5 transition-colors">
                     <td className="px-4 py-3">
                       <div className="font-semibold flex items-center gap-2">
-                        {a.is_vip && <Crown className="w-3.5 h-3.5 text-gold" />}
+                        {(a.is_vip || vipUserIds.has(a.user_id)) && <Crown className="w-3.5 h-3.5 text-gold" />}
                         {a.full_name}
+                        {vipUserIds.has(a.user_id) && (
+                          <span className="px-1.5 py-0.5 rounded-full text-[9px] uppercase tracking-widest bg-gold/15 text-gold border border-gold/40">VIP</span>
+                        )}
                       </div>
                       <div className="text-xs text-muted-foreground">{a.email} · {a.mobile_number}</div>
                     </td>
